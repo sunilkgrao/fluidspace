@@ -57,30 +57,28 @@ describe('Fluid Space Exchange', () => {
             const factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
             // create the owner/renter
-            const dan = factory.newResource(NS, 'lotUser', 'dan@email.com');
-            dan.firstName = 'Dan';
-            dan.lastName = 'Selman';
+            const raologistics = factory.newResource(NS, 'lotUser', 'owner@raologistics.com');
+            raologistics.companyName = 'raologistics';
 
-            const simon = factory.newResource(NS, 'lotUser', 'simon@email.com');
-            simon.firstName = 'Simon';
-            simon.lastName = 'Stone';
+            const frito = factory.newResource(NS, 'lotUser', 'renter@frito.com');
+            frito.companyName = 'Frito-Lay';
 
             // create the warehouselot
             const warehouselot = factory.newResource(NS, 'warehouselot', '123 Maple');
-            warehouselot.owner = factory.newRelationship(NS, 'lotUser', dan.$identifier);
+            warehouselot.owner = factory.newRelationship(NS, 'lotUser', raologistics.$identifier);
 
-            // create simon vehicle
-            const jeep = factory.newResource(NS, 'Vehicle', 'Jeep');
-            jeep.licensePlate = 'RS61KR';
-            jeep.owner = factory.newRelationship(NS, 'lotUser', simon.$identifier);
+            // create the consignment to be stored
+            const goods = factory.newResource(NS, 'Consignment', 'Dortitos Pallet');
+            goods.lotSizeNeeded = 'LARGE';
+            goods.owner = factory.newRelationship(NS, 'lotUser', frito.$identifier);
 
             // create the contract
             const contract = factory.newResource(NS, 'Contract', 'Alpha');
-            contract.owner = factory.newRelationship(NS, 'lotUser', dan.$identifier);
-            contract.renter = factory.newRelationship(NS, 'lotUser', simon.$identifier);
+            contract.owner = factory.newRelationship(NS, 'lotUser', raologistics.$identifier);
+            contract.renter = factory.newRelationship(NS, 'lotUser', frito.$identifier);
             contract.lot = factory.newRelationship(NS, 'warehouselot', warehouselot.$identifier);
-            contract.vehicle = factory.newRelationship(NS, 'Vehicle', jeep.$identifier);
-            contract.numHours = 1;
+            contract.vehicle = factory.newRelationship(NS, 'Consignment', goods.$identifier);
+            contract.numHours = 48;
 
 
             // create the reserve transaction
@@ -89,8 +87,8 @@ describe('Fluid Space Exchange', () => {
 
 
 
-            // the owner should of the warehouselot should be dan
-            warehouselot.owner.$identifier.should.equal(dan.$identifier);
+            // the owner should of the warehouselot should be raologistics
+            warehouselot.owner.$identifier.should.equal(raologistics.$identifier);
 
 
             // Get the asset registry.
@@ -104,7 +102,7 @@ describe('Fluid Space Exchange', () => {
                         })
                         .then((participantRegistry) => {
                             // add the reservers
-                            return participantRegistry.addAll([dan, simon]);
+                            return participantRegistry.addAll([raologistics, frito]);
                         })
                         .then(() => {
                             // submit the transaction
@@ -118,10 +116,10 @@ describe('Fluid Space Exchange', () => {
                             return assetRegistry.get(contract.$identifier);
                         })
                         .then((newContract) => {
-                            // the renter on the contract should not be simon
-                            newContract.renter.$identifier.should.equal(simon.$identifier);
-                            // the lotowner on the contract should be dan
-                            newContract.owner.$identifier.should.equal(dan.$identifier);
+                            // the renter on the contract should be frito
+                            newContract.renter.$identifier.should.equal(frito.$identifier);
+                            // the lotowner on the contract should be raologistics
+                            newContract.owner.$identifier.should.equal(raologistics.$identifier);
                         });
                 });
         });

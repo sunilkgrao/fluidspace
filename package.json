@@ -1,6 +1,6 @@
 {
   "name": "fluidspace",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fluid warehouse space for all",
   "scripts": {
     "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/fluidspace.bna",

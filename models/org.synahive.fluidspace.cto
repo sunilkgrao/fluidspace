@@ -21,6 +21,7 @@ concept ContactDetails {
 }
 
 concept Address {
+    o String entityName
     o String street
     o String city
     o String state
@@ -29,24 +30,27 @@ concept Address {
 }
 
 concept lotFeatures {
-  o Boolean covered optional
-  o Boolean valet optional
-  o Boolean selfPark optional
-  o Boolean inOutAllowed optional
-  o Boolean handicapAccessible optional
+  o Boolean climateControlled optional
+  o Boolean perishableStorage optional
+  o Boolean automated optional
+  o Boolean fragileHandling optional
+  o Boolean palletRacking optional
+  o Boolean shelving optional
+  o Boolean mobileShelving optional
+  o Boolean multiTtierRacking optional
+  o Boolean mezzanineFlooring optional
 }
 
-enum lotRating {
-  o POOR
-  o AVERAGE
-  o GOOD
-  o GREAT
+enum lotSize {
+  o SMALL
+  o MEDIUM
+  o LARGE
+  o EXTRALARGE
 }
 
 participant lotUser identified by userId {
     o String userId
-    o String firstName
-    o String lastName
+    o String companyName
     o ContactDetails contactDetails optional
 }
 
@@ -59,7 +63,7 @@ asset Contract identified by contractId {
   --> lotUser renter
   --> lotUser owner
   --> warehouselot lot
-  --> Vehicle vehicle optional
+  --> Consignment consignment optional
   o DateTime arrivalDateTime optional
   o Double numHours
 }
@@ -69,13 +73,14 @@ asset warehouselot identified by warehouselotID {
     o Address address optional
     o String coordinates optional
     o Double ratePerHour optional
-    o lotRating lotRating optional
+    o lotSize lotSize optional
     o lotFeatures features optional
     --> lotUser owner
 }
-asset Vehicle identified by vehicleId {
-  o String vehicleId
-  o String licensePlate optional
+asset Consignment identified by consignmentId {
+  o String consignmentId
+  o lotSize lotSizeNeeded
+  o String goodsType optional
   --> lotUser owner
 
 }
